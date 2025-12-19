@@ -1,7 +1,7 @@
-﻿using Application.Responses;
+﻿using Domain.Common;
 using Domain.Entities;
 
-namespace Application.Interfaces
+namespace Domain.Interfaces
 {
     public interface IEmployeeRepository
     {
@@ -10,7 +10,7 @@ namespace Application.Interfaces
             int pageSize,
             CancellationToken cancellationToken
         );
-        Task<Domain.Entities.Employee> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<Employee> GetByIdAsync(Guid id, CancellationToken cancellationToken);
         Task CreateAsync(Employee employee, CancellationToken cancellationToken);
         Task UpdateAsync(Employee employee, CancellationToken cancellationToken);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken);
