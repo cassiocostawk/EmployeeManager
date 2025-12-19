@@ -5,7 +5,7 @@ namespace Domain.Interfaces
 {
     public interface IEmployeeRepository
     {
-        Task<PagedResponse<Employee>> GetPagedAsync(
+        Task<PagedResult<Employee>> GetPagedAsync(
             int page,
             int pageSize,
             CancellationToken cancellationToken
