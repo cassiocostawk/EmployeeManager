@@ -1,38 +1,31 @@
+using Api.Extensions;
 using Api.Middlewares;
+using Api.Services;
 using Application.Behaviors;
 using Application.Commands;
 using Application.Mappings;
 using Application.Validators;
 using Domain.Interfaces;
 using FluentValidation;
-using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
-using Infrastructure.Persistence.Seed;
 using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region Configuration Setup
+builder.Services.AddDatabaseConfiguration(builder.Configuration);
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorNumbersToAdd: null
-            );
-        }
-    );
-});
+builder.Services.AddJwtAuthentication(builder.Configuration);
+#endregion
 
+#region DI
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+#endregion
 
+#region Pipelines
 builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<RequestsProfile>();
@@ -47,14 +40,21 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
 
+builder.Services.AddHttpContextAccessor();
+#endregion
+
+#region API
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+#endregion
 
+#region Build App
 var app = builder.Build();
+#endregion
 
-// Configure the HTTP request pipeline.
+#region Middlewares 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -65,16 +65,14 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+#endregion
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-    dbContext.Database.Migrate();
-    await DbSeeder.SeedAsync(dbContext, hasher);
-}
+#region Database Initialization
+await app.Services.InitializeDatabaseAsync();
+#endregion
 
 app.Run();
