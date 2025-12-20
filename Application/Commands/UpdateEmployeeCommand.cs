@@ -1,6 +1,7 @@
 ﻿using Application.Requests;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using MediatR;
 
@@ -31,17 +32,17 @@ namespace Application.Commands
         public async Task Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
             if (request.Request == null)
-                throw new ArgumentException("Request body is null."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new ValidationException("Request body is null.");
 
             if (request.Id == Guid.Empty)
-                throw new ArgumentException("Invalid Employee Id."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new ValidationException("Invalid Employee Id.");
 
             // TODO: Auth and Exception Middleware stages - Business Logic Validation
 
             var oldData = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
             if (oldData == null)
-                throw new KeyNotFoundException("Employee not found."); // TODO: Exception Middleware stage - implement on Middleware)
+                throw new NotFoundException("Employee not found.");
 
             var updatedData = _mapper.Map<UpdateEmployeeRequest, Employee>(request.Request, oldData);
 

@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Exceptions;
+using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Commands
@@ -25,10 +26,10 @@ namespace Application.Commands
         public async Task Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
         {
             if (request == null)
-                throw new ArgumentException("Request is null."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new ValidationException("Request is null.");
 
             if (request.Id == Guid.Empty)
-                throw new ArgumentException("Invalid Employee Id."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new ValidationException("Invalid Employee Id.");
 
             await _repository.DeleteAsync(request.Id, cancellationToken);
             return;

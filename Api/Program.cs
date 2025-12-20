@@ -1,3 +1,4 @@
+using Api.Middlewares;
 using Application.Commands;
 using Application.Mappings;
 using Domain.Interfaces;
@@ -52,6 +53,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
 

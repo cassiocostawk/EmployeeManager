@@ -57,7 +57,7 @@ namespace Infrastructure.Persistence.Repositories
             var rowsAffected = await _dbContext.SaveChangesAsync(cancellationToken);
 
             if (rowsAffected == 0)
-                throw new InvalidOperationException("Employee not found."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new InvalidOperationException("Employee not found.");
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ namespace Infrastructure.Persistence.Repositories
                 .ExecuteDeleteAsync(cancellationToken);
 
             if (rowsAffected == 0)
-                throw new KeyNotFoundException("Employee not found."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new KeyNotFoundException("Employee not found.");
         }
         public async Task UpdateAsync(Employee employee, CancellationToken cancellationToken)
         {
@@ -75,7 +75,7 @@ namespace Infrastructure.Persistence.Repositories
             var rowsAffected = await _dbContext.SaveChangesAsync(cancellationToken);
 
             if (rowsAffected == 0)
-                throw new KeyNotFoundException("Employee not found."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new KeyNotFoundException("Employee not found.");
         }
     }
 }

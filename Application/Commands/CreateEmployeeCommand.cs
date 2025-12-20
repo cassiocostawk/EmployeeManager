@@ -1,6 +1,7 @@
 ﻿using Application.Requests;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using MediatR;
 
@@ -30,14 +31,14 @@ namespace Application.Commands
         public async Task Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
         {
             if (request.Request == null)
-                throw new ArgumentException("Request body is null."); // TODO: Exception Middleware stage - implement on Middleware
+                throw new ValidationException("Request body is null.");
 
             // TODO: Auth and Exception Middleware stages - Business Logic Validation
 
             var existingDocNumberEmployee = await _repository.GetByDocNumberAsync(request.Request.DocNumber, cancellationToken);
 
             if (existingDocNumberEmployee != null)
-                throw new Exception("Document Number already exists."); // TODO: Exception Middleware stage - Create BusinessException
+                throw new BusinessRuleException("Document Number already exists.");
 
             var entity = _mapper.Map<Employee>(request.Request);
 
