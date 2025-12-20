@@ -46,8 +46,7 @@ builder.Services.AddHttpContextAccessor();
 #region API
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfiguration();
 #endregion
 
 #region Build App

@@ -2,12 +2,14 @@
 using Application.Queries;
 using Application.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EmployeeController : ControllerBase
     {
         private readonly IMediator _mediator;
