@@ -23,11 +23,13 @@ namespace Application.Commands
     {
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _repository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UpdateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository)
+        public UpdateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository, IPasswordHasher passwordHasher)
         {
             _mapper = mapper;
             _repository = repository;
+            _passwordHasher = passwordHasher;
         }
         public async Task Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
@@ -48,7 +50,8 @@ namespace Application.Commands
 
             var updatedData = _mapper.Map<UpdateEmployeeRequest, Employee>(request.Request, oldData);
 
-            // TODO: PasswordHasher stage - Hash Password if not empty
+            if (!string.IsNullOrWhiteSpace(request.Request.Password))
+                updatedData.Password = _passwordHasher.Hash(request.Request.Password);
 
             var updatedPhonesData = GeneratePhonesFromRequest(request.Request.Phones, oldData.Phones);
             updatedData.Phones = updatedPhonesData;

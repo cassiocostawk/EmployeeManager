@@ -21,18 +21,20 @@ namespace Application.Commands
     {
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _repository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public CreateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository)
+        public CreateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository, IPasswordHasher passwordHasher)
         {
             _mapper = mapper;
             _repository = repository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
         {
             if (request.Request == null)
                 throw new ValidationException("Request body is null.");
-
+            
             // TODO: Auth stage - Uncomment and implement _currentUser
             /*if (_currentUser.Role < request.Request.Role)
                 throw new BusinessRuleException("Unauthorized to create Employee with higher role level.");*/
@@ -52,8 +54,9 @@ namespace Application.Commands
             entity.Phones = request.Request.Phones?
                 .Select(phoneRequest => _mapper.Map<EmployeePhone>(phoneRequest))
                 .ToList();
-                
-            // TODO: PasswordHasher stage - Hash Password
+
+            if (!string.IsNullOrWhiteSpace(request.Request.Password))
+                entity.Password = _passwordHasher.Hash(request.Request.Password);
 
             await _repository.CreateAsync(entity, cancellationToken);
 
