@@ -24,12 +24,14 @@ namespace Application.Commands
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _repository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ICurrentUser _currentUser;
 
-        public UpdateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository, IPasswordHasher passwordHasher)
+        public UpdateEmployeeCommandHandler(IMapper mapper, IEmployeeRepository repository, IPasswordHasher passwordHasher, ICurrentUser currentUser)
         {
             _mapper = mapper;
             _repository = repository;
             _passwordHasher = passwordHasher;
+            _currentUser = currentUser;
         }
         public async Task Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
@@ -39,9 +41,8 @@ namespace Application.Commands
             if (request.Id == Guid.Empty)
                 throw new ValidationException("Invalid Employee Id.");
 
-            // TODO: Auth stage - Uncomment and implement _currentUser
-            /*if (_currentUser.Role < request.Request.Role)
-                throw new BusinessRuleException("Unauthorized to create Employee with higher role level.");*/
+            if (request.Request.Role >= _currentUser.Role)
+                throw new BusinessRuleException("Unauthorized to update Employee with higher role level.");
 
             var oldData = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
