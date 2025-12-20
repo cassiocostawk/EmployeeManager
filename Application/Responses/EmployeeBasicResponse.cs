@@ -10,7 +10,5 @@
         public required string BirthDate { get; set; }
         public required string Role { get; set; }
         public Guid? ManagerId { get; set; }
-
-        public virtual EmployeeResponse? Manager { get; set; }
     }
 }

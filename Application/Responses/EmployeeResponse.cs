@@ -13,6 +13,5 @@
         public Guid? ManagerId { get; set; }
 
         public virtual ICollection<EmployeePhoneResponse>? Phones { get; set; }
-        public virtual EmployeeResponse? Manager { get; set; }
     }
 }
