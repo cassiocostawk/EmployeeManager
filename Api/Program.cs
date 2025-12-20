@@ -1,7 +1,10 @@
 using Api.Middlewares;
+using Application.Behaviors;
 using Application.Commands;
 using Application.Mappings;
+using Application.Validators;
 using Domain.Interfaces;
+using FluentValidation;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +36,12 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<ResponsesProfile>();
 });
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEmployeeRequestValidator>();
+
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssemblies(typeof(CreateEmployeeCommand).Assembly);
+    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
 
 builder.Services.AddControllers();
