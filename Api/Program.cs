@@ -7,6 +7,7 @@ using Domain.Interfaces;
 using FluentValidation;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Persistence.Seed;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -71,7 +72,9 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
     dbContext.Database.Migrate();
+    await DbSeeder.SeedAsync(dbContext, hasher);
 }
 
 app.Run();
