@@ -37,7 +37,9 @@ namespace Application.Commands
             if (request.Id == Guid.Empty)
                 throw new ValidationException("Invalid Employee Id.");
 
-            // TODO: Auth and Exception Middleware stages - Business Logic Validation
+            // TODO: Auth stage - Uncomment and implement _currentUser
+            /*if (_currentUser.Role < request.Request.Role)
+                throw new BusinessRuleException("Unauthorized to create Employee with higher role level.");*/
 
             var oldData = await _repository.GetByIdAsync(request.Id, cancellationToken);
 

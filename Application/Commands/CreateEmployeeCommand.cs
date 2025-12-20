@@ -33,7 +33,14 @@ namespace Application.Commands
             if (request.Request == null)
                 throw new ValidationException("Request body is null.");
 
-            // TODO: Auth and Exception Middleware stages - Business Logic Validation
+            // TODO: Auth stage - Uncomment and implement _currentUser
+            /*if (_currentUser.Role < request.Request.Role)
+                throw new BusinessRuleException("Unauthorized to create Employee with higher role level.");*/
+
+            var existingEmailEmployee = await _repository.GetByEmailAsync(request.Request.Email, cancellationToken);
+
+            if (existingEmailEmployee != null)
+                throw new BusinessRuleException("Email already exists");
 
             var existingDocNumberEmployee = await _repository.GetByDocNumberAsync(request.Request.DocNumber, cancellationToken);
 

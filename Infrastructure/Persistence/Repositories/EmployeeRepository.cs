@@ -23,6 +23,15 @@ namespace Infrastructure.Persistence.Repositories
             return data;
         }
 
+        public async Task<Employee?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            var data = await _dbContext.Employees
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+
+            return data;
+        }
+
         public async Task<Employee?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var data = await _dbContext.Employees
