@@ -9,6 +9,8 @@ using Domain.Interfaces;
 using FluentValidation;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,10 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddHttpContextAccessor();
 #endregion
 
+#region Health Checks
+builder.Services.AddHealthCheckConfiguration();
+#endregion
+
 #region API
 builder.Services.AddControllers();
 
@@ -68,6 +74,29 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+#endregion
+
+#region Health Check Endpoints
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status200OK,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+    }
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status200OK,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+    }
+});
 #endregion
 
 #region Database Initialization
