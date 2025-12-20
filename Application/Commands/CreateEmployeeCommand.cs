@@ -37,7 +37,7 @@ namespace Application.Commands
             if (request.Request == null)
                 throw new ValidationException("Request body is null.");
 
-            if (request.Request.Role >= _currentUser.Role)
+            if (request.Request.Role < _currentUser.Role)
                 throw new BusinessRuleException("Unauthorized to create Employee with higher role level.");
 
             var existingEmailEmployee = await _repository.GetByEmailAsync(request.Request.Email, cancellationToken);

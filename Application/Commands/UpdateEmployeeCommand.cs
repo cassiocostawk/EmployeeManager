@@ -41,7 +41,7 @@ namespace Application.Commands
             if (request.Id == Guid.Empty)
                 throw new ValidationException("Invalid Employee Id.");
 
-            if (request.Request.Role >= _currentUser.Role)
+            if (request.Request.Role < _currentUser.Role)
                 throw new BusinessRuleException("Unauthorized to update Employee with higher role level.");
 
             var oldData = await _repository.GetByIdAsync(request.Id, cancellationToken);

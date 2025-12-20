@@ -35,7 +35,7 @@ namespace Application.Commands
 
             var data = await _repository.GetByIdAsync(request.Id, cancellationToken);   
 
-            if (data?.Role >= _currentUser.Role)
+            if (data?.Role < _currentUser.Role)
                 throw new BusinessRuleException("Unauthorized to remove Employee with higher role level.");
 
             await _repository.DeleteAsync(request.Id, cancellationToken);
