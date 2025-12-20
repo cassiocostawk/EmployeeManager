@@ -59,6 +59,8 @@ namespace Application.Commands
             if (!string.IsNullOrWhiteSpace(request.Request.Password))
                 entity.Password = _passwordHasher.Hash(request.Request.Password);
 
+            entity.ManagerId = _currentUser.UserId;
+
             await _repository.CreateAsync(entity, cancellationToken);
 
             return;
