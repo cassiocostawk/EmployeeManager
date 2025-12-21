@@ -45,6 +45,19 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddHttpContextAccessor();
 #endregion
 
+#region CORS Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+#endregion
+
 #region Health Checks
 builder.Services.AddHealthCheckConfiguration();
 #endregion
@@ -69,6 +82,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
